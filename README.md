@@ -1,66 +1,120 @@
-# project-genai-post-generator
+# 📝 LinkedIn Post Generator
 
-This tool analyzes the past LinkedIn posts of an influencer and helps them create new posts that match their writing style.
+An AI-powered tool that learns the writing style of past LinkedIn posts and generates new ones on any topic, in **English** or **French**. Built with **LangChain**, **Groq** and **Streamlit**.
 
-Let's say Mohan is a LinkedIn influencer and he needs help writing his future posts. He can feed his past LinkedIn posts to this tool, which extracts key topics from them. He can then select a topic, length, and language, and hit **Generate** to create a new post that matches his writing style.
+## 📌 Overview
 
-## How it works
+Writing consistent LinkedIn content takes time. This app analyzes a set of existing posts, extracts their topics, language and length, then uses them as **few-shot examples** so the LLM writes new posts that match the same tone and style.
 
-1. **Stage 1 — Preprocessing** (`preprocess.py`): collect raw LinkedIn posts (`data/raw_posts.json`) and use an LLM to extract `line_count`, `language`, and `tags` from each one, saving the enriched result to `data/processed_posts.json`.
-2. **Stage 2 — Generation** (`post_generator.py`): given a selected topic, language, and length, the app pulls a couple of matching past posts as few-shot examples and asks the LLM to write a new post in that same style.
+**What you can do:**
+- Pick a **topic**, a **length** (Short / Medium / Long) and a **language** (English / Français)
+- Generate a ready-to-use post in one click
+- Download the result as a `.txt` file
+- Use your own posts to personalize the style
 
-A small set of sample posts is already included in `data/` so the app works out of the box — swap in your own posts and re-run `preprocess.py` to personalize it.
+## ⚙️ How It Works
 
-## Project structure
+**Stage 1 – Preprocessing** (`preprocess.py`)
+Raw posts from `data/raw_posts.json` are sent to the LLM, which extracts the line count, language and tags of each post. Similar tags are merged into a unified list (e.g. "Job Hunting" and "Jobseekers" become "Job Search"). The result is saved to `data/processed_posts.json`.
+
+**Stage 2 – Generation** (`post_generator.py`)
+Given a topic, length and language, the app selects up to two matching past posts as examples, builds a prompt and asks the LLM to write a new post in the same style.
+
+```
+Raw posts ──► LLM metadata extraction ──► Processed posts (topic, language, length)
+                                                   │
+        Topic + Length + Language ──► Few-shot filter ──► Prompt ──► LLM ──► New post
+```
+
+## 🧰 Tech Stack
+
+| Component | Tool |
+|---|---|
+| Language | Python 3.10+ |
+| LLM framework | LangChain |
+| LLM provider | Groq API (`openai/gpt-oss-120b` by default) |
+| Interface | Streamlit |
+| Data handling | pandas, JSON |
+| Configuration | python-dotenv |
+
+## 📁 Project Structure
 
 ```
 .
-├── main.py              # Streamlit UI
-├── post_generator.py    # Prompt construction + generation
-├── few_shot.py           # Loads & filters past posts for few-shot examples
-├── preprocess.py         # One-off script: raw posts -> enriched posts
-├── llm_helper.py         # Groq LLM client
+├── main.py              # Streamlit user interface
+├── post_generator.py    # Prompt construction and post generation
+├── few_shot.py          # Loads and filters past posts as examples
+├── preprocess.py        # Raw posts -> enriched posts (topic, language, length)
+├── llm_helper.py        # Groq LLM client
 ├── data/
-│   ├── raw_posts.json        # Your original posts (input to preprocess.py)
-│   └── processed_posts.json  # Enriched posts (input to the app)
+│   ├── raw_posts.json         # Original posts (input)
+│   └── processed_posts.json   # Enriched posts used by the app
 ├── requirements.txt
-└── .env.example
+├── .env.example
+└── README.md
 ```
 
-## Set-up
+## ▶️ Getting Started
 
-1. **Get an API key**: create a free key at [console.groq.com/keys](https://console.groq.com/keys).
-2. **Configure your environment**: copy `.env.example` to `.env` and paste in your key:
-   ```commandline
-   cp .env.example .env
-   ```
-3. **Install dependencies**:
-   ```commandline
-   pip install -r requirements.txt
-   ```
-4. **Run the app**:
-   ```commandline
-   streamlit run main.py
-   ```
+**Prerequisites:** Python 3.10 or higher and a free Groq API key.
 
-## Using your own posts
+**1. Clone the repository**
+```bash
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
+```
 
-1. Put your raw posts into `data/raw_posts.json`, each as `{"text": "..."}`.
-2. Run the preprocessing step to extract metadata and tags:
-   ```commandline
+**2. Create a virtual environment and install dependencies**
+```bash
+python -m venv venv
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # Mac / Linux
+
+pip install -r requirements.txt
+```
+
+**3. Add your API key**
+Create a free key at [console.groq.com/keys](https://console.groq.com/keys), then copy `.env.example` to `.env` and add it:
+```
+GROQ_API_KEY=your_api_key_here
+```
+> 🔒 Never commit your `.env` file. It is already listed in `.gitignore`.
+
+**4. Run the app**
+```bash
+streamlit run main.py
+```
+The app opens at `http://localhost:8501`.
+
+## 🧑‍💻 Use Your Own Posts
+
+1. Put your posts in `data/raw_posts.json`, each as `{"text": "..."}`.
+2. Run the preprocessing step:
+   ```bash
    python preprocess.py
    ```
-   This regenerates `data/processed_posts.json`, which the app reads from.
-3. Restart the Streamlit app — your topics will now show up in the **Topic** dropdown.
+3. Restart the app. Your topics now appear in the **Topic** dropdown.
 
-## Notes
+## 🔧 Configuration
 
-- The model used is `openai/gpt-oss-120b` on Groq (configurable via `GROQ_MODEL_NAME` in `.env`). Groq model ids change fairly often as they retire older models — check [console.groq.com/docs/deprecations](https://console.groq.com/docs/deprecations) if you ever get a `model_not_found`/`model_decommissioned` error, and [console.groq.com/docs/models](https://console.groq.com/docs/models) for the current list.
-- Requires Python 3.10+. If `pip install` tries to *build* a package (e.g. pandas) from source instead of using a precompiled wheel, your Python version is likely too new or too old for a pinned dependency — run `python --version` and, if needed, `pip install --upgrade pip` before retrying.
+| Variable | Description | Default |
+|---|---|---|
+| `GROQ_API_KEY` | Your Groq API key | *required* |
+| `GROQ_MODEL_NAME` | Groq model to use | `openai/gpt-oss-120b` |
 
----
+Groq retires models regularly. If you get a `model_not_found` or `model_decommissioned` error, check the [current model list](https://console.groq.com/docs/models) and update `GROQ_MODEL_NAME` in your `.env`.
 
-Copyright (C) Codebasics Inc. All rights reserved.
+## 🔭 Possible Improvements
 
-**Additional Terms:**
-This software is licensed under the MIT License. However, commercial use of this software is strictly prohibited without prior written permission from the author. Attribution must be given in all copies or substantial portions of the software.
+- Add more languages and tones
+- Let users paste their own posts directly in the interface
+- Add post length control by character count
+- Deploy the app online (e.g. Streamlit Community Cloud)
+
+## 🙌 Credits
+
+Based on the open-source [GenAI post generator project](https://codebasics.io) by Codebasics, adapted with French language support, an updated interface, a current Groq model and improved error handling. Please keep the original attribution and license terms when sharing or reusing this project.
+
+## 👤 Author
+
+**Your Name** · [LinkedIn](https://linkedin.com/in/your-profile) · [GitHub](https://github.com/your-username)
