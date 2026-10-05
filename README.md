@@ -111,10 +111,5 @@ Groq retires models regularly. If you get a `model_not_found` or `model_decommis
 - Add post length control by character count
 - Deploy the app online (e.g. Streamlit Community Cloud)
 
-## 🙌 Credits
 
-Based on the open-source [GenAI post generator project](https://codebasics.io) by Codebasics, adapted with French language support, an updated interface, a current Groq model and improved error handling. Please keep the original attribution and license terms when sharing or reusing this project.
 
-## 👤 Author
-
-**Your Name** · [LinkedIn](https://linkedin.com/in/your-profile) · [GitHub](https://github.com/your-username)
