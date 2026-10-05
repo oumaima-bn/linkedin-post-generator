@@ -4,7 +4,7 @@
 An AI-powered tool that learns the writing style of past LinkedIn posts and generates new ones on any topic, in **English** or **French**. Built with **LangChain**, **Groq** and **Streamlit**.
 
 ## 📌 Overview
-![Customer Behavior Dashboard](<Post Generator.JPG>) 
+![LinkedIn Post Generator](post-generator.jpg)
 Writing consistent LinkedIn content takes time. This app analyzes a set of existing posts, extracts their topics, language and length, then uses them as **few-shot examples** so the LLM writes new posts that match the same tone and style.
 
 **What you can do:**
