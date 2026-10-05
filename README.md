@@ -1,9 +1,10 @@
 # 📝 LinkedIn Post Generator
+****Author:** Oumaima Bendjaj
 
 An AI-powered tool that learns the writing style of past LinkedIn posts and generates new ones on any topic, in **English** or **French**. Built with **LangChain**, **Groq** and **Streamlit**.
 
 ## 📌 Overview
-
+![Customer Behavior Dashboard](Post Generator.JPG)
 Writing consistent LinkedIn content takes time. This app analyzes a set of existing posts, extracts their topics, language and length, then uses them as **few-shot examples** so the LLM writes new posts that match the same tone and style.
 
 **What you can do:**
@@ -78,7 +79,6 @@ Create a free key at [console.groq.com/keys](https://console.groq.com/keys), the
 ```
 GROQ_API_KEY=your_api_key_here
 ```
-> 🔒 Never commit your `.env` file. It is already listed in `.gitignore`.
 
 **4. Run the app**
 ```bash
@@ -86,7 +86,7 @@ streamlit run main.py
 ```
 The app opens at `http://localhost:8501`.
 
-## 🧑‍💻 Use Your Own Posts
+##  Use Your Own Posts
 
 1. Put your posts in `data/raw_posts.json`, each as `{"text": "..."}`.
 2. Run the preprocessing step:
